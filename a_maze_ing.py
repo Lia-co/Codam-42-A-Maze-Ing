@@ -1,23 +1,36 @@
-#!/usr/bin/env python3
-
 import sys
-import utils.output as output
 from utils.config_parse import parse_config
-from utils.render import MazeVisualizer
-from mazegen.prim import generate_prim_maze
 from mazegen.dfs import dfs_maze_generate
+from mazegen.prim import generate_prim_maze
 from utils.bfs_solver import bfs_maze_solver
-import utils.output as output
+from utils import output
+from utils.render import MazeVisualizer
 
-
-def main():
-    config_file = sys.argv[1]
-    config = parse_config(config_file)
+def generate_and_solve(config):
+    """Generate a new maze and solve it based on the configured algorithm."""
+    print("-> Calling maze generator (DFS/PRIM)...")
     if config.algorithm.upper() == "DFS":
         maze = dfs_maze_generate(config)
     elif config.algorithm.upper() == "PRIM":
         maze = generate_prim_maze(config)
+    else:
+        maze = dfs_maze_generate(config) # Fallback safety
+    
+    print("-> Solving maze with BFS...")
     solution = bfs_maze_solver(config, maze)
+    print("-> Done generating and solving!")
+    return maze, solution
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python a_maze_ing.py <config_file>")
+        return
+
+    config_file = sys.argv[1]
+    config = parse_config(config_file)
+    
+    # Generate and solve the initial maze
+    maze, solution = generate_and_solve(config)
 
     # write output file
     output.write_output(maze, solution, config)
@@ -35,7 +48,13 @@ def main():
         print(line)
     print("-" * 40)
 
-    renderer = MazeVisualizer(maze, config, solution)
+    # Pass the lambda callback so Option 1 can re-generate the maze
+    renderer = MazeVisualizer(
+        maze=maze, 
+        config=config, 
+        solution=solution, 
+        on_regenerate=lambda: generate_and_solve(config)
+    )
     renderer.start()
 
 

@@ -15,11 +15,11 @@ COLOR_PANEL = 0x111111   # Background of the menu panel
 
 class MazeVisualizer:
 
-    def __init__(self, maze: list, config: Any, solution: list) -> None:
+    def __init__(self, maze: list, config: Any, solution: list, on_regenerate=None) -> None:
         self.maze = maze
         self.config = config
-        # Convert solution to an ordered list if it's a set, to animate step by step
         self.solution = list(solution) if isinstance(solution, set) else solution
+        self.on_regenerate = on_regenerate # Callback for re-generating the maze
 
         # Interactive menu states
         self.show_path_flag = False
@@ -176,11 +176,21 @@ class MazeVisualizer:
 
     def on_key(self, keycode: int, *args: Any) -> int:
         """Detect keys to interact with the integrated menu"""
-        if keycode in (53, 65307, 113, 81, 21):  # ESC, Q, or Key 4
+        if keycode in (53, 65307, 113, 81, 21, 52, 65434):  # ESC, Q, or Key 4
             self.close()
-        elif keycode in (18, 49, 65431):     # Key '1': Re-generate
+
+        elif keycode in (18, 49, 65431):    # Key '1': Re-generate
             print("Option 1: Re-generating maze...")
+            if self.on_regenerate:
+                try:
+                    new_maze, new_solution = self.on_regenerate()
+                    self.maze = new_maze
+                    self.solution = list(new_solution) if isinstance(new_solution, set) else new_solution
+                    print("-> Success: New maze loaded into visualizer.")
+                except Exception as e:
+                    print(f"-> Error inside on_regenerate: {e}")
             self.render_maze()
+
         elif keycode in (19, 50, 65432):     # Key '2': Show/Hide path
             self.show_path_flag = not self.show_path_flag
             print(f"Option 2: Show path = {self.show_path_flag}")
