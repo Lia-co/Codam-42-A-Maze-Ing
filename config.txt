@@ -14,5 +14,5 @@ OUTPUT_FILE=output_maze.txt
 PERFECT=1
 
 # optional part
-SEED=0
+SEED=595557
 ALGORITHM=dfs

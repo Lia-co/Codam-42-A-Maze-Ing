@@ -61,8 +61,8 @@ def remove_walls(current: Cell, neighbor: Cell) -> None:
 
 def generate_prim_maze(config: Any) -> List[List[Cell]]:
     # Set seed for random generation if specified and valid
-    if config.seed is not None and config.seed >= 0:
-        random.seed(config.seed)
+    # if config.seed is not None and config.seed >= 0:
+    #    random.seed(config.seed)
 
     width, height = config.width, config.height
 

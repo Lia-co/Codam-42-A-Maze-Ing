@@ -1,4 +1,5 @@
 import sys
+import random
 from utils.config_parse import parse_config
 from mazegen.dfs import dfs_maze_generate
 from mazegen.prim import generate_prim_maze
@@ -6,15 +7,34 @@ from utils.bfs_solver import bfs_maze_solver
 from utils import output
 from utils.render import MazeVisualizer
 
+is_first_run = True
+
 def generate_and_solve(config):
     """Generate a new maze and solve it based on the configured algorithm."""
+    global is_first_run
     print("-> Calling maze generator (DFS/PRIM)...")
+    
+    if is_first_run:
+        # First execution: respect the seed from config.txt if valid
+        if hasattr(config, 'seed') and config.seed is not None and config.seed >= 0:
+            current_seed = config.seed
+        else:
+            current_seed = random.randint(1, 999999)
+        is_first_run = False
+    else:
+        # Subsequent executions (interactive regeneration): generate a new random seed and print it
+        current_seed = random.randint(1, 999999)
+        print(f"New random maze generated! SEED = {current_seed}")
+
+    # Apply the seed for random generation
+    random.seed(current_seed)
+    
     if config.algorithm.upper() == "DFS":
         maze = dfs_maze_generate(config)
     elif config.algorithm.upper() == "PRIM":
         maze = generate_prim_maze(config)
     else:
-        maze = dfs_maze_generate(config) # Fallback safety
+        maze = dfs_maze_generate(config)  # Fallback safety
     
     print("-> Solving maze with BFS...")
     solution = bfs_maze_solver(config, maze)
@@ -35,19 +55,6 @@ def main():
     # write output file
     output.write_output(maze, solution, config)
 
-    # print maze for testing
-    print(f"Laberinth generated: {len(maze[0])}x{len(maze)} ({len(maze) * len(maze[0])} total cells).")
-    # --- print maze on terminal for testing ---
-    print(f"\n--- DISPLAY MAZE FOR TESTING ({config.width}x{config.height}) ---")
-    for y, row in enumerate(maze):
-        line = ""
-        for cell in row:
-            top = "---" if cell.north else "   "
-            left = "|" if cell.west else " "
-            line += left + top
-        print(line)
-    print("-" * 40)
-
     # Pass the lambda callback so Option 1 can re-generate the maze
     renderer = MazeVisualizer(
         maze=maze, 
@@ -56,7 +63,6 @@ def main():
         on_regenerate=lambda: generate_and_solve(config)
     )
     renderer.start()
-
 
 
 if __name__ == "__main__":
