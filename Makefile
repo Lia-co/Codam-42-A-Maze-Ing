@@ -23,8 +23,8 @@ run: install
 	$(PY) $(MAIN) $(CFG)
 
 build:
-	$(PY) -m build  
-#	cp dist/mazegen-1.0.0-py3-none-any.whl .
+	$(PY) -m build  	
+	cp dist/mazegen-*.whl .
 
 # check format
 lint:
@@ -36,7 +36,7 @@ debug:
 
 # ??? {} + is used for?
 clean:
-	rm -rf .venv .mypy_cache .pytest_cache build dist *.egg-info $(OTP)
+	rm -rf .venv .mypy_cache .pytest_cache build dist *.egg-info $(OTP) mazegen-*.whl mazegen-*.tar.gz
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
 .PHONY: install run build lint debug clean
