@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 import random
-from typing import Any, List, Tuple
+from typing import Any
+
 from utils.cell import Cell
+
 
 def get_42_pattern_cells(width: int, height: int) -> set:
     """
     Define the coordinates of the '42' adapted to the maze size.
     """
     special_cells = set()
-    
+
     # If the maze is too small, avoid placing the '42' to prevent breaking it
     if width < 15 or height < 15:
         return special_cells
 
     center_x = width // 2 - 4
     center_y = height // 2 - 3
-    
+
     four = [
         (0, 0), (0, 1), (0, 2),
         (1, 2),
@@ -28,15 +30,15 @@ def get_42_pattern_cells(width: int, height: int) -> set:
         (4, 3),
         (4, 4), (5, 4), (6, 4)
     ]
-    
+
     for dx, dy in four:
         if 0 <= center_x + dx < width and 0 <= center_y + dy < height:
             special_cells.add((center_x + dx, center_y + dy))
-            
+
     for dx, dy in two:
         if 0 <= center_x + dx < width and 0 <= center_y + dy < height:
             special_cells.add((center_x + dx, center_y + dy))
-            
+
     return special_cells
 
 
@@ -50,7 +52,7 @@ def remove_walls(current: Cell, neighbor: Cell) -> None:
         neighbor.west = False
     elif dx == -1:    # Neighbor is West
         current.west = False
-        neighbor.east = False  # Fixed: was set to True, causing wall artifacts/squares
+        neighbor.east = False
     elif dy == 1:     # Neighbor is South
         current.south = False
         neighbor.north = False
@@ -59,7 +61,7 @@ def remove_walls(current: Cell, neighbor: Cell) -> None:
         neighbor.south = False
 
 
-def generate_prim_maze(config: Any) -> List[List[Cell]]:
+def generate_prim_maze(config: Any) -> list[list[Cell]]:
     # Set seed for random generation if specified and valid
     # if config.seed is not None and config.seed >= 0:
     #    random.seed(config.seed)
@@ -77,7 +79,8 @@ def generate_prim_maze(config: Any) -> List[List[Cell]]:
         for x in range(width):
             if (x, y) in special_coords:
                 grid[y][x].is_special = True
-                grid[y][x].visited = True  # Prevents Prim from carving through them
+                # Prevents Prim from carving through them
+                grid[y][x].visited = True
 
     # 2. Pick a random starting cell (that doesn't belong to the "42" pattern)
     while True:
@@ -90,11 +93,12 @@ def generate_prim_maze(config: Any) -> List[List[Cell]]:
     start_cell.visited = True
 
     # 3. Frontier list storing wall connections: (visited_cell, neighbor_cell)
-    frontier: List[Tuple[Cell, Cell]] = []
+    frontier: list[tuple[Cell, Cell]] = []
 
     def add_frontier(cell: Cell) -> None:
         """Adds unvisited neighbors of a cell to the frontier list."""
-        directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]  # North, South, East, West
+        directions = [(0, -1), (0, 1), (1, 0), (-1, 0)
+                      ]  # North, South, East, West
         for dx, dy in directions:
             nx, ny = cell.x + dx, cell.y + dy
             if 0 <= nx < width and 0 <= ny < height:
@@ -113,8 +117,9 @@ def generate_prim_maze(config: Any) -> List[List[Cell]]:
             remove_walls(cell, neighbor)
             add_frontier(neighbor)
 
-    # 5. If PERFECT is False, create an imperfect maze by opening extra walls to introduce loops
-    # config.perfect is a boolean (True = perfect maze, False = imperfect maze with loops)
+    # 5. If PERFECT is False, create an imperfect maze by opening extra walls
+    # config.perfect is a boolean (True = perfect maze, False = imperfect maze
+    # with loops)
     if not config.perfect:
         # Break a percentage of internal walls in a controlled way
         for y in range(height):
@@ -128,8 +133,9 @@ def generate_prim_maze(config: Any) -> List[List[Cell]]:
                     directions.append(grid[y][x + 1])
                 if y < height - 1 and cell.south:
                     directions.append(grid[y + 1][x])
-                
-                # With a low probability (e.g., 15%), remove an extra wall to create clean loops
+
+                # With a low probability (e.g., 15%), remove an extra wall to
+                # create clean loops
                 if directions and random.random() < 0.15:
                     neighbor = random.choice(directions)
                     if not neighbor.is_special:

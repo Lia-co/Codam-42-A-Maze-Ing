@@ -1,6 +1,6 @@
 import sys
-import time
 from typing import Any
+
 from mlx import Mlx
 
 # Amount of pixels x cell
@@ -10,20 +10,27 @@ COLOR_BG = 0x1E1E1E      # Dark background for the cell
 COLOR_WALL = 0xFFFFFF   # White
 COLOR_ENTRY = 0x00FF00  # Green
 COLOR_EXIT = 0xFF0000   # Red
-COLOR_SPECIAL = 0x808080 # Grey for special cells (42 pattern)
+COLOR_SPECIAL = 0x808080  # Grey for special cells (42 pattern)
 COLOR_PANEL = 0x111111   # Background of the menu panel
 
+
 class MazeVisualizer:
-    def __init__(self, maze: list, config: Any, solution: list, on_regenerate=None) -> None:
+    def __init__(self, maze: list, config: Any, solution: list,
+                 on_regenerate=None) -> None:
         self.maze = maze
         self.config = config
-        self.solution = list(solution) if isinstance(solution, set) else solution
-        self.on_regenerate = on_regenerate  # Callback for re-generating the maze
+        self.solution = list(solution) if isinstance(
+            solution, set) else solution
+        self.on_regenerate = on_regenerate
 
         # Interactive menu states
         self.show_path_flag = False
         self.color_index = 0
-        self.wall_colors = [COLOR_WALL, 0x00FFFF, 0xFFD700, 0xFF69B4]  # White, Cyan, Gold, Pink
+        self.wall_colors = [
+            COLOR_WALL,
+            0x00FFFF,
+            0xFFD700,
+            0xFF69B4]  # White, Cyan, Gold, Pink
 
         # Animation states for the solution path
         self.animating_path = False
@@ -48,7 +55,8 @@ class MazeVisualizer:
         )
 
         # Access image data
-        (self.data, self.bpp, self.size_line, self.fmt) = self.m.mlx_get_data_addr(self.img)
+        (self.data, self.bpp, self.size_line,
+         self.fmt) = self.m.mlx_get_data_addr(self.img)
 
         # Monitoring events
         self.m.mlx_key_hook(self.win, self.on_key, None)
@@ -69,7 +77,8 @@ class MazeVisualizer:
             255
         ])
 
-    def draw_rect(self, x: int, y: int, width: int, height: int, color: int) -> None:
+    def draw_rect(self, x: int, y: int, width: int,
+                  height: int, color: int) -> None:
         for dy in range(height):
             for dx in range(width):
                 self.put_pixel(x + dx, y + dy, color)
@@ -85,7 +94,13 @@ class MazeVisualizer:
     def render_maze(self, *args: Any) -> int:
         # 1. Fill general background and menu panel
         self.draw_rect(0, 0, self.win_width, self.win_height, COLOR_BG)
-        self.draw_rect(0, self.config.height * CELL, self.win_width, PANEL_HEIGHT, COLOR_PANEL)
+        self.draw_rect(
+            0,
+            self.config.height *
+            CELL,
+            self.win_width,
+            PANEL_HEIGHT,
+            COLOR_PANEL)
         current_wall_color = self.wall_colors[self.color_index]
 
         # 2. Draw the maze
@@ -107,20 +122,30 @@ class MazeVisualizer:
                     self.draw_vertical(px + CELL - 1, py, current_wall_color)
 
                 # Show shortest path if active (Option 2)
-                if self.show_path_flag and not self.animating_path and (x, y) in self.solution:
-                    self.draw_rect(px + 6, py + 6, CELL - 12, CELL - 12, 0x00FFFF)
+                if self.show_path_flag and not self.animating_path and (
+                        x, y) in self.solution:
+                    self.draw_rect(
+                        px + 6, py + 6, CELL - 12, CELL - 12, 0x00FFFF)
 
                 # Animate path step by step (Option 5)
-                if self.animating_path and (x, y) in self.solution[:self.anim_index]:
-                    self.draw_rect(px + 6, py + 6, CELL - 12, CELL - 12, 0xFF00FF)  # Magenta for animation trail
+                if self.animating_path and (
+                        x, y) in self.solution[:self.anim_index]:
+                    self.draw_rect(
+                        px + 6,
+                        py + 6,
+                        CELL - 12,
+                        CELL - 12,
+                        0xFF00FF)  # Magenta for animation trail
 
                 # Entry point
                 if (x, y) == self.config.entry:
-                    self.draw_rect(px + 4, py + 4, CELL - 8, CELL - 8, COLOR_ENTRY)
+                    self.draw_rect(
+                        px + 4, py + 4, CELL - 8, CELL - 8, COLOR_ENTRY)
 
                 # Exit point
                 if (x, y) == self.config.exit:
-                    self.draw_rect(px + 4, py + 4, CELL - 8, CELL - 8, COLOR_EXIT)
+                    self.draw_rect(
+                        px + 4, py + 4, CELL - 8, CELL - 8, COLOR_EXIT)
 
         # 3. Put image to window
         self.m.mlx_put_image_to_window(
@@ -129,11 +154,41 @@ class MazeVisualizer:
 
         # 4. Draw menu text with mlx_string_put on the bottom panel
         base_y = (self.config.height * CELL) + 15
-        self.m.mlx_string_put(self.ptr, self.win, 20, base_y, 0xFFFFFF, "=== A-Maze-ing ===")
-        self.m.mlx_string_put(self.ptr, self.win, 20, base_y + 20, 0x00FF00, "1. Re-generate maze")
-        self.m.mlx_string_put(self.ptr, self.win, 20, base_y + 35, 0x00FFFF, "2. Show/Hide path | 5. Animate")
-        self.m.mlx_string_put(self.ptr, self.win, 20, base_y + 50, 0xFFD700, "3. Rotate wall colours")
-        self.m.mlx_string_put(self.ptr, self.win, 20, base_y + 65, 0xFF0000, "4. Quit (ESC)")
+        self.m.mlx_string_put(
+            self.ptr,
+            self.win,
+            20,
+            base_y,
+            0xFFFFFF,
+            "=== A-Maze-ing ===")
+        self.m.mlx_string_put(
+            self.ptr,
+            self.win,
+            20,
+            base_y + 20,
+            0x00FF00,
+            "1. Re-generate maze")
+        self.m.mlx_string_put(
+            self.ptr,
+            self.win,
+            20,
+            base_y + 35,
+            0x00FFFF,
+            "2. Show/Hide path | 5. Animate")
+        self.m.mlx_string_put(
+            self.ptr,
+            self.win,
+            20,
+            base_y + 50,
+            0xFFD700,
+            "3. Rotate wall colours")
+        self.m.mlx_string_put(
+            self.ptr,
+            self.win,
+            20,
+            base_y + 65,
+            0xFF0000,
+            "4. Quit (ESC)")
         return 0
 
     def loop_hook(self, *args: Any) -> int:
@@ -157,7 +212,8 @@ class MazeVisualizer:
                 try:
                     new_maze, new_solution = self.on_regenerate()
                     self.maze = new_maze
-                    self.solution = list(new_solution) if isinstance(new_solution, set) else new_solution
+                    self.solution = list(new_solution) if isinstance(
+                        new_solution, set) else new_solution
                     print("-> Success: New maze loaded into visualizer.")
                 except Exception as e:
                     print(f"-> Error inside on_regenerate: {e}")

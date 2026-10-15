@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from utils.config_parse import Config, parse_config
-from utils.render import MazeVisualizer
-from mazegen.prim import generate_prim_maze
 from mazegen.dfs import dfs_maze_generate
+from mazegen.prim import generate_prim_maze
 from utils.bfs_solver import bfs_maze_solver
 from utils.cell import Cell
+from utils.config_parse import Config, parse_config
 from utils.output import write_output
+from utils.render import MazeVisualizer
 
 
 def print_maze(
@@ -73,4 +73,8 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    print(f">>> VALOR DE CONFIG.PERFECT: {config.perfect} (Tipo: {type(config.perfect)})")
+    print(
+        f">>> VALOR DE CONFIG.PERFECT: {
+            config.perfect} (Tipo: {
+            type(
+                config.perfect)})")

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-from typing import Final, List, Tuple
+import itertools
+from typing import Final
+
 from utils.cell import Cell
 from utils.config_parse import Config
-
 
 """
 Bit masks wall's direction
@@ -31,18 +32,18 @@ def cell_to_hex(cell: Cell) -> str:
     return format(val, "X")
 
 
-def maze_to_hex(maze: List[List[Cell]]) -> List[str]:
+def maze_to_hex(maze: list[list[Cell]]) -> list[str]:
     width, height = len(maze[0]), len(maze)
-    lines: List[str] = []
+    lines: list[str] = []
     for y in range(height):
         line = "".join(cell_to_hex(maze[y][x])for x in range(width))
         lines.append(line)
     return lines
 
 
-def path_to_str(solution: List[Tuple[int, int]]) -> str:
-    dir_path: List[str] = []
-    for (x1, y1), (x2, y2) in zip(solution, solution[1:]):
+def path_to_str(solution: list[tuple[int, int]]) -> str:
+    dir_path: list[str] = []
+    for (x1, y1), (x2, y2) in itertools.pairwise(solution):
         dx, dy = x2 - x1, y2 - y1
         dir_path.append(DIR_MOVE[(dx, dy)])
     path_str = "".join(dir_path)
@@ -50,8 +51,8 @@ def path_to_str(solution: List[Tuple[int, int]]) -> str:
 
 
 def write_output(
-        maze: List[List[Cell]],
-        solution: List[Tuple[int, int]],
+        maze: list[list[Cell]],
+        solution: list[tuple[int, int]],
         config: Config) -> None:
     lines_hex = maze_to_hex(maze)
     solution_str = path_to_str(solution)
@@ -59,8 +60,7 @@ def write_output(
     exit_pos_str = ','.join(str(val) for val in config.exit)
 
     with open(config.output_file, "w") as f:
-        for line in lines_hex:
-            f.write(line + "\n")
+        f.writelines(line + "\n" for line in lines_hex)
         f.write("\n")
         f.write(entry_pos_str + "\n")
         f.write(exit_pos_str + "\n")

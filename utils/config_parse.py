@@ -10,11 +10,12 @@ The parsing process is separated into 3 stages:
 - store data into an immutable class and return it
 
 Each stage will raise error message if there is invalid input, and give back a
-clear error message instead 
+clear error message instead
 of crashing the program.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
 # should it be a protective variable?
@@ -29,12 +30,18 @@ def parse_coord(value: str) -> tuple:
     """
     coords = [coor.strip() for coor in value.split(",")]
     if len(coords) != 2:
-        raise ValueError(f"Not enough valid input {value}, expect format: x,y are digital numbers(e.g. 20,15)")
+        raise ValueError(
+            f"Not enough valid input {value}, "
+            f"expect format: x,y are digital numbers(e.g. 20,15)"
+        )
     try:
         x: int = int(coords[0])
         y: int = int(coords[1])
     except ValueError as e:
-        raise ValueError(f"Invalid input '{value}', expect format: x,y are digital numbers(e.g. 20,15)") from e
+        raise ValueError(
+            f"Invalid input '{value}', expect format: "
+            f"x,y are digital numbers(e.g. 20,15)"
+        ) from e
     return x, y
 
 
@@ -72,15 +79,17 @@ class Config:
     algorithm: str
 
 
-def parse_config(filename: str) -> Config:    
+def parse_config(filename: str) -> Config:
     """
-    Parse config.txt file to validate KEY=VALUE pair per line and return an immutable class 
+    Parse config.txt file to validate KEY=VALUE pair
+    per line and return an immutable class
     including valid data for later generating a maze.
 
     The parsing process is separated into 3 stages:
-    - open, read the file and find valid KEY=VALUE pair per line(skip lines start with '#' or no KEY=VALUE pair found)
+    - open, read the file and find valid KEY=VALUE pair
+    per line(skip lines start with '#' or no KEY=VALUE pair found)
         - if found, convert pair into dictionary with two strings
-    - validate data and convert value to valid data types(integers, boolean and tuple)
+    - validate data and convert value to valid data types
     - store data into an immutable class and return it
 
     Raise error messages in following conditions:
@@ -91,55 +100,74 @@ def parse_config(filename: str) -> Config:
     - if entry and exit are outside of width or height
     - if entry and exit are located in 42 decoration pattern(conditional)
     """
-    
+
     data: dict[str, str] = {}
 
     # open file with 'with', don't need to handle close file
     with open(filename) as f:
-        # ??? why using for loop for a file can get per line, and \n as a seperator
-        # chunck each line from file into pairs with for loop, skip line start with '#' and empty line
+        # why using for loop for a file can get per line, and \n as a seperator
+        # chunck each line from file into pairs with for loop, skip line start
+        # with '#' and empty line
         for pair in f:
             pair = pair.strip()
             if pair.startswith("#") or not pair:
                 continue
             if "=" not in pair:
-                raise SyntaxError(f"Key '{pair}' must have valid value, expect input: KEY=VALUE")
-            
+                raise SyntaxError(
+                    f"Key '{pair}' must have valid value, "
+                    f"expect input: KEY=VALUE"
+                )
+
             # chunck pair into keys and values
             key, value = pair.split("=", 2)
             if not key or not value:
-                raise SyntaxError(f"Wrong syntax for '{pair}', expect input: KEY=VALUE ")
+                raise SyntaxError(
+                    f"Wrong syntax for '{pair}', expect input: KEY=VALUE ")
             key = key.strip().upper()
             value = value.strip()
             data[key] = value
 
-    #???check if there are enough keys, how to compare them?
-    missing = [key for key in (mandatory_keys) if not key in data]
+    # ???check if there are enough keys, how to compare them?
+    missing = [
+        key for key in (mandatory_keys) if key not in data
+        ]
     if missing:
-        raise ValueError(f"Missing mandatory key {missing}. Please add {missing}")
+        raise ValueError(
+            f"Missing mandatory key {missing}. Please add {missing}")
 
     # chekc if WIDTH and HEIGHT are valid
-    #???how to silence the base 10 error.
+    # ???how to silence the base 10 error.
     try:
         width: int = int(data["WIDTH"])
         height: int = int(data["HEIGHT"])
     except ValueError as e:
-        raise ValueError("Invalid value for 'WIDTH' or/and 'HEIGHT', expect digital input, e.g. 10") from e
+        raise ValueError(
+            "Invalid value for 'WIDTH' or/and 'HEIGHT', "
+            "expect digital input, e.g. 10") from e
 
     if width <= 0 or height <= 0:
-        raise ValueError(f"Invalid value for 'WIDTH' or/and 'HEIGHT. Integers must greater than 0")
+        raise ValueError(
+            "Invalid value for 'WIDTH' or/and 'HEIGHT. "
+            "Integers must greater than 0")
 
-    # check if ENTRY and EXIT are the same, inside of field, or located 42 pattern
+    # check if ENTRY and EXIT are the same, inside of field, or located 42
+    # pattern
     entry = parse_coord(data["ENTRY"])
     exit = parse_coord(data["EXIT"])
 
     if entry == exit:
-        raise ValueError(f"ENTRY and EXIT are the same. Please make them locating differently.")
+        raise ValueError(
+            "ENTRY and EXIT are the same. "
+            "Please make them locating differently.")
     # bounce check needed more discussion
     if entry[0] >= width or exit[0] > width:
-        raise ValueError(f"ENTRY's x or/and EXIT's x are outside of width. Expect x <= {width - 1}")
+        raise ValueError(
+            f"ENTRY's x or/and EXIT's x are outside of width. "
+            f"Expect x <= {width - 1}")
     if entry[1] >= height or exit[1] >= height:
-        raise ValueError(f"ENTRY's y or/and EXIT's y are outside of height. Expect y <= {height - 1}")
+        raise ValueError(
+            f"ENTRY's y or/and EXIT's y are outside of height. "
+            f"Expect y <= {height - 1}")
     # assign variable output
     output = data["OUTPUT_FILE"]
     # assign variable perfect
@@ -148,9 +176,10 @@ def parse_config(filename: str) -> Config:
     try:
         seed = int(data["SEED"])
     except ValueError as e:
-        raise ValueError(f"Invalid value for 'SEED', expect digital input, e.g. 10") from e
+        raise ValueError(
+            "Invalid value for 'SEED', expect digital input, e.g. 10") from e
     if seed < 0:
-        raise ValueError(f"'SEED' must be positive integer")
+        raise ValueError("'SEED' must be positive integer")
     # check if ALGORITHM has valid digit strings
     algorithm = data["ALGORITHM"].upper()
 

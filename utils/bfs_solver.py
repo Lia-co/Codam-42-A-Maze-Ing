@@ -15,17 +15,17 @@ Important variables for this algorithm:
 - parent: record the cell's parent cell, and it will become the path
 """
 
-from typing import List, Optional
 from collections import deque
+
 from utils.cell import Cell
 from utils.config_parse import Config
 
 
 def add_accessible_neighbors(
         current: Cell,
-        maze: List[List[Cell]]) -> List[Cell]:
+        maze: list[list[Cell]]) -> list[Cell]:
     """check available neighbor cells."""
-    available_neighbor: List[Cell] = []
+    available_neighbor: list[Cell] = []
     directions = {
         "north": (0, -1, "north"),
         "east": (1, 0, "east"),
@@ -43,7 +43,7 @@ def add_accessible_neighbors(
 
 def bfs_maze_solver(
         config: Config,
-        maze: List[List[Cell]]) -> list[tuple[int, int]]:
+        maze: list[list[Cell]]) -> list[tuple[int, int]]:
     # initialize start, goal, visited, queue and parent
     x1, y1 = config.entry
     start = maze[y1][x1]
@@ -52,7 +52,7 @@ def bfs_maze_solver(
 
     visited: set[tuple[int, int]] = {(start.x, start.y)}
     queue: deque[tuple[int, int]] = deque([start])
-    parent: dict[tuple[int, int], Optional[tuple[int, int]]] = {
+    parent: dict[tuple[int, int], tuple[int, int] | None] = {
         (start.x, start.y): None}
 
     while len(queue) != 0:
@@ -76,7 +76,7 @@ def bfs_maze_solver(
         raise ValueError("EXIT is not visited.")
     # if exit in path, then reconstruct path from exit to entry
     else:
-        last_spot: Optional[tuple[int, int]] = config.exit
+        last_spot: tuple[int, int] | None = config.exit
         path: list[tuple[int, int]] = []
         while last_spot is not None:
             path.append(last_spot)
