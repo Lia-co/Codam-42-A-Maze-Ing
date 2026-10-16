@@ -17,7 +17,6 @@ def generate_and_solve(
         config: Any) -> Tuple[List[List[Cell]], List[Tuple[int, int]]]:
     """Generate a new maze and solve it based on the configured algorithm."""
     global is_first_run
-    #print("-> Calling maze generator (DFS/PRIM)...")
 
     if is_first_run:
         # First execution: respect the seed from config.txt if valid
@@ -44,9 +43,7 @@ def generate_and_solve(
     else:
         maze = dfs_maze_generate(config)  # Fallback safety
 
-    #print("-> Solving maze with BFS...")
     solution = bfs_maze_solver(config, maze)
-    #print("-> Done generating and solving!")
     return maze, solution
 
 

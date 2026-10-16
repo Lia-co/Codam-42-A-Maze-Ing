@@ -16,14 +16,15 @@ COLOR_PANEL = 0x111111   # Background of the menu panel
 
 
 class MazeVisualizer:
-    def __init__(self,
-                 maze: list[list[Cell]],
-                 config: Any,
-                 solution: list[tuple[int, int]],
-                 on_regenerate: Callable[
-                    [],
-                    tuple[list[list[Cell]], list[tuple[int, int]]]
-                ] | None = None,
+    def __init__(
+        self,
+        maze: list[list[Cell]],
+        config: Any,
+        solution: list[tuple[int, int]],
+        on_regenerate: Callable[
+            [],
+            tuple[list[list[Cell]], list[tuple[int, int]]]
+        ] | None = None,
     ) -> None:
         self.maze = maze
         self.config = config
@@ -221,7 +222,6 @@ class MazeVisualizer:
                     self.maze = new_maze
                     self.solution = list(new_solution) if isinstance(
                         new_solution, set) else new_solution
-                    #print("-> Success: New maze loaded into visualizer.")
                 except Exception as e:
                     print(f"-> Error inside on_regenerate: {e}")
             self.render_maze()
