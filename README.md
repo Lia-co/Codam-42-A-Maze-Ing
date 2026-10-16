@@ -117,8 +117,29 @@ When finally it reaches the exit, extra path from parent dictionary and reverse 
 We decide to use MiniLibX(MLX) as interface window. with MLX, we can have more space for UI design and make it more fun. 
 
 # 2. Instruction
+To run the application you can just write `make` in the commandline.
+
+The Maze will be displayed with a Menu with the following options:
+1) Re-generate a new maze, in which the new seed would be displayed in the commandline.
+2) Rotate colours.
+3) Show path.
+4) Close window, also posible with ESC and Q keys.
+5) Animate path
+
 ## 2.1 How to install
+Alternativelly you can write:
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install mlx-2.2-py3-none-any.whl 
+```
+
 ## 2.2 How to run the program
+To run just write:
+```
+python3 a-maze-ing.py config.txt
+```
 
 # 3. Resources
 [Grokking Algorithms: An Illustrated Guide for Programmers and Other Curious People](https://www.manning.com/books/grokking-algorithms)</br>

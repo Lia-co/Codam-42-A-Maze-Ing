@@ -221,7 +221,7 @@ class MazeVisualizer:
                     self.maze = new_maze
                     self.solution = list(new_solution) if isinstance(
                         new_solution, set) else new_solution
-                    print("-> Success: New maze loaded into visualizer.")
+                    #print("-> Success: New maze loaded into visualizer.")
                 except Exception as e:
                     print(f"-> Error inside on_regenerate: {e}")
             self.render_maze()
