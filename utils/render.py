@@ -1,5 +1,5 @@
 import sys
-from typing import Any
+from typing import Any, Callable
 from utils.cell import Cell
 
 from mlx import Mlx
@@ -20,11 +20,14 @@ class MazeVisualizer:
                  maze: list[list[Cell]],
                  config: Any,
                  solution: list[tuple[int, int]],
-                 on_regenerate=None) -> None:
+                 on_regenerate: Callable[
+                    [],
+                    tuple[list[list[Cell]], list[tuple[int, int]]]
+                ] | None = None,
+    ) -> None:
         self.maze = maze
         self.config = config
-        self.solution = list(solution) if isinstance(
-            solution, set) else solution
+        self.solution = solution
         self.on_regenerate = on_regenerate
 
         # Interactive menu states
