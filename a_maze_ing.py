@@ -1,8 +1,10 @@
 import random
 import sys
 
+from typing import Any, List, Tuple
 from mazegen.dfs import dfs_maze_generate
 from mazegen.prim import generate_prim_maze
+from utils.cell import Cell
 from utils import output
 from utils.bfs_solver import bfs_maze_solver
 from utils.config_parse import parse_config
@@ -11,7 +13,8 @@ from utils.render import MazeVisualizer
 is_first_run = True
 
 
-def generate_and_solve(config):
+def generate_and_solve(
+        config: Any) -> Tuple[List[List[Cell]], List[Tuple[int, int]]]:
     """Generate a new maze and solve it based on the configured algorithm."""
     global is_first_run
     print("-> Calling maze generator (DFS/PRIM)...")
@@ -47,7 +50,7 @@ def generate_and_solve(config):
     return maze, solution
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         print("Usage: python a_maze_ing.py <config_file>")
         return

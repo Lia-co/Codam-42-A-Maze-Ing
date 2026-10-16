@@ -22,7 +22,7 @@ from dataclasses import dataclass
 mandatory_keys = {"WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"}
 
 
-def parse_coord(value: str) -> tuple:
+def parse_coord(value: str) -> tuple[int, int]:
     """
     Parse digital strings("x,y") into a tuple {x, y} with 2 integers.
     Only digital number and white space are accepted(e.g. "x,  y" is valid)

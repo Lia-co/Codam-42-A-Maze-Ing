@@ -16,7 +16,7 @@ DIR_BIT: Final[dict[str, int]] = {
     "west": 8       # 1000
 }
 
-DIR_MOVE: Final[dict[tuple, str]] = {
+DIR_MOVE: Final[dict[tuple[int, int], str]] = {
     (0, -1): "N",
     (1, 0): "E",
     (0, 1): "S",

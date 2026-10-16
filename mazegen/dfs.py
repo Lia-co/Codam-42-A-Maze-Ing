@@ -26,11 +26,11 @@ def remove_walls(current: Cell, neighbor: Cell) -> None:
 
 
 # 42 pattern
-def get_42_pattern_cells(width: int, height: int) -> set:
+def get_42_pattern_cells(width: int, height: int) -> set[tuple[int, int]]:
     """
     Define the coordinates of the '42' adapted to the maze size.
     """
-    special_cells = set()
+    special_cells: set[tuple[int, int]] = set()
 
     # If the maze is too small, avoid placing the '42' to prevent breaking it
     if width < 15 or height < 15:

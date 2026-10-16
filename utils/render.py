@@ -1,5 +1,6 @@
 import sys
 from typing import Any
+from utils.cell import Cell
 
 from mlx import Mlx
 
@@ -15,7 +16,10 @@ COLOR_PANEL = 0x111111   # Background of the menu panel
 
 
 class MazeVisualizer:
-    def __init__(self, maze: list, config: Any, solution: list,
+    def __init__(self,
+                 maze: list[list[Cell]],
+                 config: Any,
+                 solution: list[tuple[int, int]],
                  on_regenerate=None) -> None:
         self.maze = maze
         self.config = config

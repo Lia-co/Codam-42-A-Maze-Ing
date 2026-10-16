@@ -51,16 +51,15 @@ def bfs_maze_solver(
     goal = maze[y2][x2]
 
     visited: set[tuple[int, int]] = {(start.x, start.y)}
-    queue: deque[tuple[int, int]] = deque([start])
+    queue: deque[Cell] = deque([start])
     parent: dict[tuple[int, int], tuple[int, int] | None] = {
         (start.x, start.y): None}
 
     while len(queue) != 0:
-        # howt to make current as a Cell?
         current = queue.popleft()
 
         # if it reaches the exit, break the loop
-        if current == goal:
+        if current is goal:
             break
         # else add accessible neighbors to the queue
         for neighbor in add_accessible_neighbors(current, maze):
@@ -68,18 +67,16 @@ def bfs_maze_solver(
             if neighbor_pos not in visited:
                 visited.add(neighbor_pos)
                 queue.append(neighbor)
-                # how to add current cell as neighbor's parent cell in a dict?
                 parent[neighbor_pos] = (current.x, current.y)
 
     # check if exit in path
     if config.exit not in parent:
         raise ValueError("EXIT is not visited.")
     # if exit in path, then reconstruct path from exit to entry
-    else:
-        last_spot: tuple[int, int] | None = config.exit
-        path: list[tuple[int, int]] = []
-        while last_spot is not None:
-            path.append(last_spot)
-            last_spot = parent[last_spot]
+    last_spot: tuple[int, int] | None = config.exit
+    path: list[tuple[int, int]] = []
+    while last_spot is not None:
+        path.append(last_spot)
+        last_spot = parent[last_spot]
     path.reverse()
     return path
