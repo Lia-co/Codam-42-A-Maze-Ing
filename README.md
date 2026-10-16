@@ -9,10 +9,27 @@ This project is perfect for beginers to understand module logic, algorithms, dat
 
 ## 1.2 Tasks distribution
 
+The project is mainly distributed like following:
+
+| Student           | Tasks                                                               |
+| -----------       | ------------------------------------------------------------------- |
+| sliang            | parse config file                                                   |
+| sliang            | dfs maze generating algorithm                                       |
+| betferna          | Prim's maze generating algorithm                                    |
+| betferna          | Makefile, handle package for virtual environment                    |
+| sliang            | bfs solution algorithm                                              |
+| betferna          | make (im)perfect pattern                                            |
+| betferna          | visualize maze with MLX and add animation                           |
+| sliang            | export output file                                                  |
+| betferna & sliang | align with mypy and flake8 format                                   |
+
+
 
 ### 1.2.1 The structure of files
 present a tree screenshot and explain briefly
+
 ### 1.2.2 Decision reasons for distribution
+We seperate tasks equally and both of us work with maze algorithms to make sure that we know the whole structure of generating maze, which is the core part of this projects. We organically cooperate with each other, if one of us finish a task, then another one picks up different tasks.
 
 ## 1.3 Data parsing, validation and return object
 This project needs to parse the config.txt and return an immutable object with valid data
