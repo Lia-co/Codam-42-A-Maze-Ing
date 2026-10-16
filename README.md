@@ -2,7 +2,10 @@
 
 # 1. Description
 ## 1.1 Overview
-*insert a gif to present the demo*</br>
+<img src="https://i.ibb.co/P7CmQYF/maze-dfs.jpg" width="300" style="float:left; padding-right:50">
+<img src="https://i.ibb.co/r2HMJCXm/maze-dfs.jpg" width="300">
+<p >DFS                    //                      PRIM</p> 
+
 A_Maze_Ing project is aimed at make a reusable maze generation program with UI design. The user can pass data into a config file to manage how the maze look like. The config file decides the size of the maze(WIDTH, HEIGHT), entry and exit location(ENTRY, EXIT), the name of output file including maze map in hexdecimal code, and if the maze is perfect(only one path) or not(multiple paths).
 
 This project is perfect for beginers to understand module logic, algorithms, data parsing process and have fun for UI design.
