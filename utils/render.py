@@ -156,48 +156,54 @@ class MazeVisualizer:
                         px + 4, py + 4, CELL - 8, CELL - 8, COLOR_EXIT)
 
         # 3. Put image to window
-        self.m.mlx_put_image_to_window(
-            self.ptr, self.win, self.img, 0, 0
-        )
+        #self.m.mlx_put_image_to_window(
+        #    self.ptr, self.win, self.img, 0, 0
+        #)
 
         # 4. Draw menu text with mlx_string_put on the bottom panel
-        base_y = (self.config.height * CELL) + 15
+        base_y = (self.config.height * CELL) - 25
         self.m.mlx_string_put(
             self.ptr,
             self.win,
-            20,
+            0,
             base_y,
             0xFFFFFF,
             "=== A-Maze-ing ===")
         self.m.mlx_string_put(
             self.ptr,
             self.win,
-            20,
+            0,
             base_y + 20,
             0x00FF00,
             "1. Re-generate maze")
         self.m.mlx_string_put(
             self.ptr,
             self.win,
-            20,
+            0,
             base_y + 35,
             0x00FFFF,
             "2. Show/Hide path | 5. Animate")
         self.m.mlx_string_put(
             self.ptr,
             self.win,
-            20,
+            0,
             base_y + 50,
             0xFFD700,
             "3. Rotate wall colours")
-        self.m.mlx_string_put(
+        self.mlx_string_put(
             self.ptr,
             self.win,
-            20,
+            0,
             base_y + 65,
             0xFF0000,
             "4. Quit (ESC)")
+    
+        # 3. Put image to window
+        self.m.mlx_put_image_to_window(
+            self.ptr, self.win, self.img, 0, 0
+        )
         return 0
+
 
     def loop_hook(self, *args: Any) -> int:
         """Handles frame updates for path animation"""
@@ -211,9 +217,9 @@ class MazeVisualizer:
 
     def on_key(self, keycode: int, *args: Any) -> int:
         """Detect keys to interact with the integrated menu"""
-        if keycode in (65307, 113, 81, 21, 52, 65434):  # ESC, Q, or Key 4
+        if keycode in (113, 81, 21, 52):  # ESC, Q, or Key 4 65434 65307
             self.close()
-        elif keycode in (18, 49, 65431):    # Key '1': Re-generate
+        elif keycode in (18, 49):    # Key '1': Re-generate 65431
             print("Option 1: Re-generating maze...")
             self.animating_path = False
             if self.on_regenerate:
@@ -225,20 +231,20 @@ class MazeVisualizer:
                 except Exception as e:
                     print(f"-> Error inside on_regenerate: {e}")
             self.render_maze()
-        elif keycode in (19, 50, 65432):     # Key '2': Show/Hide path
+        elif keycode in (19, 50):     # Key '2': Show/Hide path 65432
             self.show_path_flag = not self.show_path_flag
             print(f"Option 2: Show path = {self.show_path_flag}")
             self.render_maze()
-        elif keycode in (20, 51, 65433):     # Key '3': Rotate colors
+        elif keycode in (20, 51):     # Key '3': Rotate colors 65433
             self.color_index = (self.color_index + 1) % len(self.wall_colors)
             print("Option 3: Rotating wall colors")
             self.render_maze()
-        elif keycode in (22, 53, 65435):    # Key '5': Start path animation
+        elif keycode in (22, 53):    # Key '5': Start path animation 65435
             print("Option 5: Animating solution path...")
             self.show_path_flag = False
             self.animating_path = True
             self.anim_index = 0
-            return 0
+            #return 0
         return 0
 
     def close(self, *args: Any) -> int:
