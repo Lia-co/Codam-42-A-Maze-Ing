@@ -64,7 +64,7 @@ def write_output(
         f.write("\n")
         f.write(entry_pos_str + "\n")
         f.write(exit_pos_str + "\n")
-        f.write(solution_str)
+        f.write(solution_str + "\n")
 
     # write seed
         seed_val = getattr(config, 'seed', 'N/A')

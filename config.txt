@@ -1,14 +1,12 @@
 # config file must contain one "key=value" pair per line
 # mandatory part
-WIDTH=15
-HEIGHT=15
-WIDTH=20
-HEIGHT=20
+WIDTH=25
+HEIGHT=25
 ENTRY=0,0
-EXIT=14,14
+EXIT=16,16
 OUTPUT_FILE=output_maze.txt
-PERFECT=1
+PERFECT=0
 
 # optional part
-SEED=1
-ALGORITHM=dfs
+SEED=0
+ALGORITHM=prim

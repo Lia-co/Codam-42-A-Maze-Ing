@@ -5,6 +5,52 @@ from typing import Any
 from utils.cell import Cell
 
 
+def add_neighbors(cell: Cell, width: int, height: int, grid: list[list[Cell]]) -> list[Cell]:
+    """Adds neighbors of a cell to the frontier list."""
+    neighbors: list[Cell] = []
+    directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]
+    for dx, dy in directions:
+        nx, ny = cell.x + dx, cell.y + dy
+        # if neighbor cell is within the maze
+        if 0 <= nx < width and 0 <= ny < height:
+            neighbor = grid[ny][nx]
+            if not neighbor.is_special:
+                neighbors.append(neighbor)
+    return neighbors
+
+
+def open_corners(grid: list[list[Cell]], width: int, height: int) -> None:
+    corners = [
+        (0, 0),
+        (width - 1, 0),
+        (width - 1, 0),
+        (0, height - 1)]
+    for cx, cy in corners:
+        corner_cell: Cell = grid[cy][cx]
+        corner_cell_neighbors: list[Cell] = add_neighbors(corner_cell, width, height, grid)
+        for neighbor in corner_cell_neighbors:
+            remove_walls(corner_cell, neighbor)
+
+
+def num_exits(cell: Cell) -> int:
+    """number of exits for a cell"""
+    return sum(not getattr(cell, s) for s in ("north", "east", "south", "west"))
+
+
+def braid_pass(grid: list[list[Cell]], width: int, height: int) -> None:
+    cells = [c for row in grid for c in row]
+    # random.shuffle(cells)
+    for cell in cells:
+        if num_exits(cell) == 1:
+            # find neighbors and sort them according to num of exits
+            cell_neighbors = add_neighbors(cell, width, height, grid)
+            if cell_neighbors:
+                # random.shuffle(cell_neighbors)
+                cell_neighbors.sort(key=num_exits)
+                # remove walls between them
+                remove_walls(cell, cell_neighbors[0])
+
+
 def get_42_pattern_cells(width: int, height: int) -> set[tuple[int, int]]:
     """
     Define the coordinates of the '42' adapted to the maze size.
@@ -15,8 +61,8 @@ def get_42_pattern_cells(width: int, height: int) -> set[tuple[int, int]]:
     if width < 15 or height < 15:
         return special_cells
 
-    center_x = width // 2 - 4
-    center_y = height // 2 - 3
+    center_x = width // 2 - 3
+    center_y = height // 2 - 2
 
     four = [
         (0, 0), (0, 1), (0, 2),
@@ -140,5 +186,8 @@ def generate_prim_maze(config: Any) -> list[list[Cell]]:
                     neighbor = random.choice(directions)
                     if not neighbor.is_special:
                         remove_walls(cell, neighbor)
+
+        open_corners(grid, width, height)
+        braid_pass(grid, width, height)
 
     return grid

@@ -190,7 +190,7 @@ class MazeVisualizer:
             base_y + 50,
             0xFFD700,
             "3. Rotate wall colours")
-        self.mlx_string_put(
+        self.m.mlx_string_put(
             self.ptr,
             self.win,
             0,
