@@ -74,23 +74,23 @@ cells are visited, it trackback to the entry point.
 
 This algorithm follows below steps:
 1. Choose the initial cell, mark it as visited and push it to the stack
-2. While the stack is not empty
-    2.1 Pop a cell from the stack and make it a current cell
-    2.2 If the current cell has any neighbours which have not been visited
-        2.2.1 Push the current cell to the stack
-        2.2.2 Choose one of the unvisited neighbours
-        2.2.3 Remove the wall between the current cell and the chosen cell
-        2.2.4 Mark the chosen cell as visited and push it to the stack
+2. While the stack is not empty</br>
+    2.1 Pop a cell from the stack and make it a current cell</br>
+    2.2 If the current cell has any neighbours which have not been visited</br>
+        2.2.1 Push the current cell to the stack</br>
+        2.2.2 Choose one of the unvisited neighbours</br>
+        2.2.3 Remove the wall between the current cell and the chosen cell</br>
+        2.2.4 Mark the chosen cell as visited and push it to the stack</br>
 
-Prim's algorithm
+Prim's algorithm</br>
 This algorithm follows below steps:
 1. Pick a random cell, mark it as visited
 2. Add the cell's all adjacent walls to a frontier list.
-3. While the frontier list is not empty:
-    3.1 Randomly pick a wall from frontier list.
-    3.2 Check if the two cells divided by that wall.
-        3.2.1 If only one of them has been visited:
-        3.2.2 Carve the wall to connect both cells.
+3. While the frontier list is not empty:</br>
+    3.1 Randomly pick a wall from frontier list.</br>
+    3.2 Check if the two cells divided by that wall.</br>
+        3.2.1 If only one of them has been visited:</br>
+        3.2.2 Carve the wall to connect both cells.</br>
 4. Mark the unvisited cell as "visited" and repeat from step 2.
 5. If both cells are already visited, simply remove the wall from the list
 without doing anything (to prevent creating loops/cycles).
@@ -104,14 +104,14 @@ It is perfect for unweighted maze when compared with other A* and Dijkstra's alg
 
 This algorithm follows below steps:
 1. Start at the entry cell, push it to the queue and visited, and mark its parent cell(None at the start)
-2. While the queue is not empty
-    2.1 Left pop a cell from the queue and make it a current cell (first in first out)
-    2.2 If current cell
-        2.2.1 Is the exit, break the loop
-        2.2.2 Else, add all accessible neighbors. If neigbors are not visited:
-            2.2.2.1 Push the neighbor cell to visited
-            2.2.2.2 Push the neighbor cell to queue
-            2.2.2.3 Add current cell as neighbor cell's parent as key value pair in a dictionary
+2. While the queue is not empty</br>
+    2.1 Left pop a cell from the queue and make it a current cell (first in first out)</br>
+    2.2 If current cell</br>
+        2.2.1 Is the exit, break the loop</br>
+        2.2.2 Else, add all accessible neighbors. If neigbors are not visited:</br>
+            2.2.2.1 Push the neighbor cell to visited</br>
+            2.2.2.2 Push the neighbor cell to queue</br>
+            2.2.2.3 Add current cell as neighbor cell's parent as key value pair in a dictionary</br>
 
 When finally it reaches the exit, extra path from parent dictionary and reverse the path. This is the shortest solution for the maze. 
 
