@@ -8,5 +8,5 @@ OUTPUT_FILE=output_maze.txt
 PERFECT=0
 
 # optional part
-SEED=2
-ALGORITHM=prim
+SEED=0
+ALGORITHM=dfs

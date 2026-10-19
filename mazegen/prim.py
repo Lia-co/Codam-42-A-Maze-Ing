@@ -1,8 +1,24 @@
 #!/usr/bin/env python3
 import random
 from typing import Any
-
 from utils.cell import Cell
+
+
+def check_walls(cell: Cell, neighbor: Cell) -> bool:
+    """find the walls between two cells"""
+    # check north wall
+    if cell.y - neighbor.y == 1 and cell.north is True and neighbor.south is True:
+        return True
+    # check east wall
+    if cell.x - neighbor.x == -1 and cell.east is True and neighbor.west is True:
+        return True
+    # check south wall
+    if cell.y - neighbor.y == -1 and cell.south is True and neighbor.north is True:
+        return True
+    # check west wall
+    if cell.x - neighbor.x == 1 and cell.west is True and neighbor.east is True:
+        return True
+    return False
 
 
 def add_neighbors(cell: Cell, width: int, height: int, grid: list[list[Cell]]) -> list[Cell]:
@@ -14,7 +30,8 @@ def add_neighbors(cell: Cell, width: int, height: int, grid: list[list[Cell]]) -
         # if neighbor cell is within the maze
         if 0 <= nx < width and 0 <= ny < height:
             neighbor = grid[ny][nx]
-            if not neighbor.is_special:
+            # only add neighbor with wall in between and not in 42 pattern
+            if not neighbor.is_special and check_walls(cell, neighbor) is True:
                 neighbors.append(neighbor)
     return neighbors
 
@@ -40,8 +57,8 @@ def num_exits(cell: Cell) -> int:
 def braid_pass(grid: list[list[Cell]], width: int, height: int) -> None:
     cells = [c for row in grid for c in row]
     random.shuffle(cells)
-    for cell in cells and cell.is_special is False:
-        if num_exits(cell) == 1:
+    for cell in cells:
+        if cell.is_special is False and num_exits(cell) == 1:
             # find neighbors and sort them according to num of exits
             cell_neighbors = add_neighbors(cell, width, height, grid)
             if cell_neighbors:
@@ -163,30 +180,9 @@ def generate_prim_maze(config: Any) -> list[list[Cell]]:
             remove_walls(cell, neighbor)
             add_frontier(neighbor)
 
-    # 5. If PERFECT is False, create an imperfect maze by opening extra walls
-    # config.perfect is a boolean (True = perfect maze, False = imperfect maze
-    # with loops)
+    # 5. If PERFECT is False, create pac-man pattern with multiple solutions
+    # 4 cours are open and try to minimize dead ends until 0
     if not config.perfect:
-        # # Break a percentage of internal walls in a controlled way
-        # for y in range(height):
-        #     for x in range(width):
-        #         cell = grid[y][x]
-        #         if cell.is_special:
-        #             continue
-        #         # Choose random neighbors to open extra passages
-        #         directions = []
-        #         if x < width - 1 and cell.east:
-        #             directions.append(grid[y][x + 1])
-        #         if y < height - 1 and cell.south:
-        #             directions.append(grid[y + 1][x])
-
-        #         # With a low probability (e.g., 15%), remove an extra wall to
-        #         # create clean loops
-        #         if directions and random.random() < 0.15:
-        #             neighbor = random.choice(directions)
-        #             if not neighbor.is_special:
-        #                 remove_walls(cell, neighbor)
-
         open_corners(grid, width, height)
         braid_pass(grid, width, height)
 

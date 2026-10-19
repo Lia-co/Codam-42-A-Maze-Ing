@@ -2,7 +2,6 @@
 
 import random
 from typing import Any
-
 from utils.cell import Cell
 
 
@@ -20,6 +19,23 @@ def add_frontier(cell: Cell, width: int, height: int, grid: list[list[Cell]]) ->
     return frontier
 
 
+def check_walls(cell: Cell, neighbor: Cell) -> bool:
+    """find the walls between two cells"""
+    # check north wall
+    if cell.y - neighbor.y == 1 and cell.north is True and neighbor.south is True:
+        return True
+    # check east wall
+    if cell.x - neighbor.x == -1 and cell.east is True and neighbor.west is True:
+        return True
+    # check south wall
+    if cell.y - neighbor.y == -1 and cell.south is True and neighbor.north is True:
+        return True
+    # check west wall
+    if cell.x - neighbor.x == 1 and cell.west is True and neighbor.east is True:
+        return True
+    return False
+
+
 def add_neighbors(cell: Cell, width: int, height: int, grid: list[list[Cell]]) -> list[Cell]:
     """Adds neighbors of a cell to the frontier list."""
     neighbors: list[Cell] = []
@@ -29,7 +45,8 @@ def add_neighbors(cell: Cell, width: int, height: int, grid: list[list[Cell]]) -
         # if neighbor cell is within the maze
         if 0 <= nx < width and 0 <= ny < height:
             neighbor = grid[ny][nx]
-            if not neighbor.is_special:
+            # only add neighbor with wall in between and not in 42 pattern
+            if not neighbor.is_special and check_walls(cell, neighbor) is True:
                 neighbors.append(neighbor)
     return neighbors
 
@@ -183,25 +200,6 @@ def dfs_maze_generate(config: Any) -> list[list[Cell]]:
     # ==== NEW === if perfect == false (Same as in Prim's)
 
     if not config.perfect:
-        # Break a percentage of internal walls in a controlled way
-        # for y in range(height):
-        #     for x in range(width):
-        #         cell = grid[y][x]
-        #         if cell.is_special:
-        #             continue
-        #         # Choose random neighbors to open extra passages
-        #         directions = []
-        #         if x < width - 1 and cell.east:
-        #             directions.append(grid[y][x + 1])
-        #         if y < height - 1 and cell.south:
-        #             directions.append(grid[y + 1][x])
-
-        #         # With a low probability
-        #         if directions and random.random() < 0.15:
-        #             neighbor = random.choice(directions)
-        #             if not neighbor.is_special:
-        #                 remove_walls(cell, neighbor)
-
         open_corners(grid, width, height)
         braid_pass(grid, width, height)
 
