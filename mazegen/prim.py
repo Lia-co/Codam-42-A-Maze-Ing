@@ -23,7 +23,7 @@ def open_corners(grid: list[list[Cell]], width: int, height: int) -> None:
     corners = [
         (0, 0),
         (width - 1, 0),
-        (width - 1, 0),
+        (width - 1, height - 1),
         (0, height - 1)]
     for cx, cy in corners:
         corner_cell: Cell = grid[cy][cx]
@@ -39,13 +39,13 @@ def num_exits(cell: Cell) -> int:
 
 def braid_pass(grid: list[list[Cell]], width: int, height: int) -> None:
     cells = [c for row in grid for c in row]
-    # random.shuffle(cells)
-    for cell in cells:
+    random.shuffle(cells)
+    for cell in cells and cell.is_special is False:
         if num_exits(cell) == 1:
             # find neighbors and sort them according to num of exits
             cell_neighbors = add_neighbors(cell, width, height, grid)
             if cell_neighbors:
-                # random.shuffle(cell_neighbors)
+                random.shuffle(cell_neighbors)
                 cell_neighbors.sort(key=num_exits)
                 # remove walls between them
                 remove_walls(cell, cell_neighbors[0])
@@ -109,8 +109,8 @@ def remove_walls(current: Cell, neighbor: Cell) -> None:
 
 def generate_prim_maze(config: Any) -> list[list[Cell]]:
     # Set seed for random generation if specified and valid
-    # if config.seed is not None and config.seed >= 0:
-    #    random.seed(config.seed)
+    if config.seed is not None and config.seed >= 0:
+        random.seed(config.seed)
 
     width, height = config.width, config.height
 
@@ -167,25 +167,25 @@ def generate_prim_maze(config: Any) -> list[list[Cell]]:
     # config.perfect is a boolean (True = perfect maze, False = imperfect maze
     # with loops)
     if not config.perfect:
-        # Break a percentage of internal walls in a controlled way
-        for y in range(height):
-            for x in range(width):
-                cell = grid[y][x]
-                if cell.is_special:
-                    continue
-                # Choose random neighbors to open extra passages
-                directions = []
-                if x < width - 1 and cell.east:
-                    directions.append(grid[y][x + 1])
-                if y < height - 1 and cell.south:
-                    directions.append(grid[y + 1][x])
+        # # Break a percentage of internal walls in a controlled way
+        # for y in range(height):
+        #     for x in range(width):
+        #         cell = grid[y][x]
+        #         if cell.is_special:
+        #             continue
+        #         # Choose random neighbors to open extra passages
+        #         directions = []
+        #         if x < width - 1 and cell.east:
+        #             directions.append(grid[y][x + 1])
+        #         if y < height - 1 and cell.south:
+        #             directions.append(grid[y + 1][x])
 
-                # With a low probability (e.g., 15%), remove an extra wall to
-                # create clean loops
-                if directions and random.random() < 0.15:
-                    neighbor = random.choice(directions)
-                    if not neighbor.is_special:
-                        remove_walls(cell, neighbor)
+        #         # With a low probability (e.g., 15%), remove an extra wall to
+        #         # create clean loops
+        #         if directions and random.random() < 0.15:
+        #             neighbor = random.choice(directions)
+        #             if not neighbor.is_special:
+        #                 remove_walls(cell, neighbor)
 
         open_corners(grid, width, height)
         braid_pass(grid, width, height)

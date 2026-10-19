@@ -111,7 +111,7 @@ def num_exits(cell: Cell) -> int:
 
 def braid_pass(grid: list[list[Cell]], width: int, height: int) -> None:
     cells = [c for row in grid for c in row]
-    # random.shuffle(cells)
+    random.shuffle(cells)
     for cell in cells:
         if num_exits(cell) == 1:
             # find neighbors and sort them according to num of exits
@@ -184,23 +184,23 @@ def dfs_maze_generate(config: Any) -> list[list[Cell]]:
 
     if not config.perfect:
         # Break a percentage of internal walls in a controlled way
-        for y in range(height):
-            for x in range(width):
-                cell = grid[y][x]
-                if cell.is_special:
-                    continue
-                # Choose random neighbors to open extra passages
-                directions = []
-                if x < width - 1 and cell.east:
-                    directions.append(grid[y][x + 1])
-                if y < height - 1 and cell.south:
-                    directions.append(grid[y + 1][x])
+        # for y in range(height):
+        #     for x in range(width):
+        #         cell = grid[y][x]
+        #         if cell.is_special:
+        #             continue
+        #         # Choose random neighbors to open extra passages
+        #         directions = []
+        #         if x < width - 1 and cell.east:
+        #             directions.append(grid[y][x + 1])
+        #         if y < height - 1 and cell.south:
+        #             directions.append(grid[y + 1][x])
 
-                # With a low probability
-                if directions and random.random() < 0.15:
-                    neighbor = random.choice(directions)
-                    if not neighbor.is_special:
-                        remove_walls(cell, neighbor)
+        #         # With a low probability
+        #         if directions and random.random() < 0.15:
+        #             neighbor = random.choice(directions)
+        #             if not neighbor.is_special:
+        #                 remove_walls(cell, neighbor)
 
         open_corners(grid, width, height)
         braid_pass(grid, width, height)
