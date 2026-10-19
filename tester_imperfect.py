@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     # --- print maze on terminal for testing ---
     print(f"\n--- DISPLAY MAZE ({config.width}x{config.height}) ---\n")
-    print_maze(maze, config, solution)
+    print_maze(maze, config, None)
     print(f"The solution is: {solution}")
     write_output(maze, solution, config)
 

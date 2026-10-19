@@ -10,8 +10,7 @@ The parsing process is separated into 3 stages:
 - store data into an immutable class and return it
 
 Each stage will raise error message if there is invalid input, and give back a
-clear error message instead
-of crashing the program.
+clear error message instead of crashing the program.
 """
 
 from __future__ import annotations
