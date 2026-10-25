@@ -11,8 +11,8 @@ def dfs_maze_generate(config: Any) -> list[list[Cell]]:
     With a stack to track visited cells, and it will reach every cell. When all
     cells are visited, it trackback to the entry point.
     """
-    if config.seed is not None and config.seed >= 0:
-        random.seed(config.seed)
+    #if config.seed is not None and config.seed >= 0:
+    #    random.seed(config.seed)
 
     width, height = config.width, config.height
 

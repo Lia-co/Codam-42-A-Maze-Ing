@@ -30,7 +30,8 @@ class MazeVisualizer:
         self.config = config
         self.solution = solution
         self.on_regenerate = on_regenerate
-
+        self.path_style = 0
+        
         # Interactive menu states
         self.show_path_flag = False
         self.color_index = 0

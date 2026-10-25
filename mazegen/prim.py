@@ -7,8 +7,8 @@ from mazegen.mazegen_utils import get_42_pattern_cells, add_frontier, remove_wal
 
 def generate_prim_maze(config: Any) -> list[list[Cell]]:
     # Set seed for random generation if specified and valid
-    if config.seed is not None and config.seed >= 0:
-        random.seed(config.seed)
+    #if config.seed is not None and config.seed >= 0:
+    #    random.seed(config.seed)
 
     width, height = config.width, config.height
 
