@@ -1,16 +1,14 @@
-# Entornos virtuales
 .venv/
 venv/
 ENV/
 
-# Archivos de caché de Python
 __pycache__/
 *.pyc
 *.pyo
 
-# Configuración de linters y pruebas
 .mypy_cache/
 .pytest_cache/
 
-# Variables de entorno secretas
 .env
+
+*.whl

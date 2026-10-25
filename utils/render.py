@@ -6,7 +6,7 @@ from mlx import Mlx
 
 # Amount of pixels x cell
 CELL = 20
-PANEL_HEIGHT = 100  # Extra height in pixels for the bottom menu
+PANEL_HEIGHT = 125  # Extra height in pixels for the bottom menu
 COLOR_BG = 0x1E1E1E      # Dark background for the cell
 COLOR_WALL = 0xFFFFFF   # White
 COLOR_ENTRY = 0x00FF00  # Green
@@ -44,9 +44,14 @@ class MazeVisualizer:
         self.animating_path = False
         self.anim_index = 0
 
-        # Total window dimensions (Maze + Bottom panel)
-        self.win_width = config.width * CELL
-        self.win_height = (config.height * CELL) + PANEL_HEIGHT
+        # Precompute the solution cells for faster rendering
+        self.solution_set = set(self.solution)
+
+        # Window dimensions
+        self.maze_width = config.width * CELL
+        self.maze_height = config.height * CELL
+        self.win_width = self.maze_width
+        self.win_height = self.maze_height + PANEL_HEIGHT
 
         # Create and init object
         self.m = Mlx()
@@ -54,12 +59,17 @@ class MazeVisualizer:
 
         # Create window with extended height
         self.win = self.m.mlx_new_window(
-            self.ptr, self.win_width, self.win_height, "A-Maze-ing"
+            self.ptr,
+            self.win_width,
+            self.win_height,
+            "A-Maze-ing"
         )
 
         # Create image dimensions
         self.img = self.m.mlx_new_image(
-            self.ptr, self.win_width, self.win_height
+            self.ptr,
+            self.win_width,
+            self.win_height
         )
 
         # Access image data
@@ -77,7 +87,9 @@ class MazeVisualizer:
             return
         if y < 0 or y >= self.win_height:
             return
+
         offset = y * self.size_line + x * 4
+
         self.data[offset:offset + 4] = bytes([
             color & 0xFF,
             (color >> 8) & 0xFF,
@@ -156,117 +168,146 @@ class MazeVisualizer:
                         px + 4, py + 4, CELL - 8, CELL - 8, COLOR_EXIT)
 
         # 3. Put image to window
-        #self.m.mlx_put_image_to_window(
-        #    self.ptr, self.win, self.img, 0, 0
-        #)
-
-        # 4. Draw menu text with mlx_string_put on the bottom panel
-        base_y = (self.config.height * CELL) - 25
-        self.m.mlx_string_put(
-            self.ptr,
-            self.win,
-            0,
-            base_y,
-            0xFFFFFF,
-            "=== A-Maze-ing ===")
-        self.m.mlx_string_put(
-            self.ptr,
-            self.win,
-            0,
-            base_y + 20,
-            0x00FF00,
-            "1. Re-generate maze")
-        self.m.mlx_string_put(
-            self.ptr,
-            self.win,
-            0,
-            base_y + 35,
-            0x00FFFF,
-            "2. Show/Hide path | 5. Animate")
-        self.m.mlx_string_put(
-            self.ptr,
-            self.win,
-            0,
-            base_y + 50,
-            0xFFD700,
-            "3. Rotate wall colours")
-        self.m.mlx_string_put(
-            self.ptr,
-            self.win,
-            0,
-            base_y + 65,
-            0xFF0000,
-            "4. Quit (ESC)")
-    
-        # 3. Put image to window
         self.m.mlx_put_image_to_window(
             self.ptr, self.win, self.img, 0, 0
         )
+
+        # 4. Draw menu text with mlx_string_put on the bottom panel
+        # Draw the menu text after the image
+        # This prevents the image from covering the text
+        base_y = self.maze_height + 5
+
+        self.m.mlx_string_put(
+            self.ptr, self.win, 5, base_y,
+            0xFFFFFF, "=== A-Maze-ing ==="
+        )
+
+        self.m.mlx_string_put(
+            self.ptr, self.win, 5, base_y + 20,
+            0x00FF00, "1. Re-generate maze"
+        )
+
+        self.m.mlx_string_put(
+            self.ptr, self.win, 5, base_y + 35,
+            0x00FFFF, "2. Show/Hide path"
+        )
+
+        self.m.mlx_string_put(
+            self.ptr, self.win, 5, base_y + 50,
+            0xFFD700, "3. Rotate wall colours"
+        )
+
+        self.m.mlx_string_put(
+            self.ptr, self.win, 5, base_y + 65,
+            0xFF0000, "4. Quit (ESC)"
+        )
+
+        self.m.mlx_string_put(
+            self.ptr, self.win, 5, base_y + 80,
+            0xFF00FF, "5. Animate path"
+        )
+
         return 0
 
-
     def loop_hook(self, *args: Any) -> int:
-        """Handles frame updates for path animation"""
-        if self.animating_path:
-            if self.anim_index < len(self.solution):
-                self.anim_index += 1
-                self.render_maze()
-            else:
-                self.animating_path = False
+        """Update the animation one step at a time."""
+        if not self.animating_path:
+            return 0
+
+        if self.anim_index < len(self.solution):
+            self.anim_index += 1
+            self.render_maze()
+        else:
+            self.animating_path = False
+            self.render_maze()
+
         return 0
 
     def on_key(self, keycode: int, *args: Any) -> int:
-        """Detect keys to interact with the integrated menu"""
-        if keycode in (113, 81, 21, 52):  # ESC, Q, or Key 4 65434 65307
+        """Handle keyboard input."""
+
+        # Quit using ESC or Q
+        if keycode in (113, 81, 65307, 52):
             self.close()
-        elif keycode in (18, 49):    # Key '1': Re-generate 65431
+            return 0
+
+        # Option 1: Regenerate the maze
+        if keycode in (18, 49):
             print("Option 1: Re-generating maze...")
+
             self.animating_path = False
+            self.anim_index = 0
+            self.show_path_flag = False
+
             if self.on_regenerate:
                 try:
                     new_maze, new_solution = self.on_regenerate()
+
                     self.maze = new_maze
-                    self.solution = list(new_solution) if isinstance(
-                        new_solution, set) else new_solution
-                except Exception as e:
-                    print(f"-> Error inside on_regenerate: {e}")
+                    self.solution = list(new_solution)
+                    self.solution_set = set(self.solution)
+
+                except Exception as error:
+                    print(f"Error regenerating maze: {error}")
+
             self.render_maze()
-        elif keycode in (19, 50):     # Key '2': Show/Hide path 65432
+
+        # Option 2: Show or hide the solution
+        elif keycode in (19, 50):
+            self.animating_path = False
             self.show_path_flag = not self.show_path_flag
-            print(f"Option 2: Show path = {self.show_path_flag}")
             self.render_maze()
-        elif keycode in (20, 51):     # Key '3': Rotate colors 65433
-            self.color_index = (self.color_index + 1) % len(self.wall_colors)
-            print("Option 3: Rotating wall colors")
+
+        # Option 3: Change wall colours
+        elif keycode in (20, 51):
+            self.color_index = (
+                self.color_index + 1
+            ) % len(self.wall_colors)
+
             self.render_maze()
-        elif keycode in (22, 53):    # Key '5': Start path animation 65435
+
+        # Option 5: Animate the solution
+        elif keycode in (22, 53):
             print("Option 5: Animating solution path...")
+
             self.show_path_flag = False
             self.animating_path = True
             self.anim_index = 0
-            #return 0
+            self.render_maze()
+
         return 0
 
     def close(self, *args: Any) -> int:
+        """Release MiniLibX resources and close the application."""
         try:
-            if self.img:
+            if getattr(self, "img", None):
                 self.m.mlx_destroy_image(self.ptr, self.img)
-            if self.win:
+                self.img = None
+
+            if getattr(self, "win", None):
                 self.m.mlx_destroy_window(self.ptr, self.win)
+                self.win = None
+
             if hasattr(self.m, "mlx_loop_exit"):
                 self.m.mlx_loop_exit(self.ptr)
-        except Exception:
-            pass
-        sys.exit(0)
-        return 0
+
+        except Exception as error:
+            print(f"Error while closing: {error}")
+
+        raise SystemExit(0)
 
     def start(self) -> None:
+        """Render the maze and start the MiniLibX event loop."""
         try:
             self.render_maze()
-            # Register loop hook for animations if supported by mlx wrapper
+
             if hasattr(self.m, "mlx_loop_hook"):
-                self.m.mlx_loop_hook(self.ptr, self.loop_hook, None)
+                self.m.mlx_loop_hook(
+                    self.ptr, self.loop_hook, None
+                )
+
             self.m.mlx_loop(self.ptr)
-        except Exception as e:
-            print(f"Error detected: {e}")
+
+        except Exception as error:
+            print(f"Error detected: {error}")
             self.close()

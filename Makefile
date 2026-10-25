@@ -30,7 +30,7 @@ debug:
 	$(PY) -m pdb $(MAIN) $(CONFIG)
 
 clean:
-	rm -rf .venv .mypy_cache .pytest_cache build dist *.egg-info $(OTP) mazegen-*.whl mazegen-*.tar.gz
+	rm -rf .venv .mypy_cache .vscode .pytest_cache build dist *.egg-info $(OTP) mazegen-*.whl mazegen-*.tar.gz
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
 .PHONY: install run build lint debug clean
