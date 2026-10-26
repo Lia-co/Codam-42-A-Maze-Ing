@@ -6,7 +6,8 @@ from mlx import Mlx
 
 # Amount of pixels x cell
 CELL = 20
-PANEL_HEIGHT = 125  # Extra height in pixels for the bottom menu
+PANEL_HEIGHT =120  # Extra height in pixels for the bottom menu
+PANEL_WIDTH = 250  # Width of the menu panel
 COLOR_BG = 0x1E1E1E      # Dark background for the cell
 COLOR_WALL = 0xFFFFFF   # White
 COLOR_ENTRY = 0x00FF00  # Green
@@ -51,7 +52,7 @@ class MazeVisualizer:
         # Window dimensions
         self.maze_width = config.width * CELL
         self.maze_height = config.height * CELL
-        self.win_width = self.maze_width
+        self.win_width = self.maze_width if self.maze_width > PANEL_WIDTH else PANEL_WIDTH
         self.win_height = self.maze_height + PANEL_HEIGHT
 
         # Create and init object
@@ -112,6 +113,30 @@ class MazeVisualizer:
         for i in range(CELL):
             self.put_pixel(x, y + i, color)
 
+    # Change style of path
+    def draw_path_marker(self, x: int, y: int, color: int) -> None:
+        px = x * CELL
+        py = y * CELL
+
+        #square
+        if self.path_style == 0:
+            self.draw_rect(px + 6, py + 6, 8, 8, 0x00FFFF)
+
+        elif self.path_style == 1:
+        # Diamond
+            self.draw_rect(px + 8, py + 5, 4, 10, 0xFF00FF)
+            self.draw_rect(px + 6, py + 7, 8, 6, 0xFF00FF)
+
+        elif self.path_style == 2:
+        # Cross
+            self.draw_rect(px + 8, py + 4, 4, 12, 0xFFD700)
+            self.draw_rect(px + 4, py + 8, 12, 4, 0xFFD700)
+
+        elif self.path_style == 3:
+        # Small diamond
+            self.draw_rect(px + 8, py + 7, 4, 6, 0x00FF00)
+            self.draw_rect(px + 7, py + 8, 6, 4, 0x00FF00)
+
     def render_maze(self, *args: Any) -> int:
         # 1. Fill general background and menu panel
         self.draw_rect(0, 0, self.win_width, self.win_height, COLOR_BG)
@@ -143,20 +168,26 @@ class MazeVisualizer:
                     self.draw_vertical(px + CELL - 1, py, current_wall_color)
 
                 # Show shortest path if active (Option 2)
+                #        x, y) in self.solution:
+                #    self.draw_rect(
+                #        px + 6, py + 6, CELL - 12, CELL - 12, 0x00FFFF)
+                
                 if self.show_path_flag and not self.animating_path and (
-                        x, y) in self.solution:
-                    self.draw_rect(
-                        px + 6, py + 6, CELL - 12, CELL - 12, 0x00FFFF)
+                        x, y) in self.solution_set:
+                    self.draw_path_marker(x, y, 0x00FFFF)
 
                 # Animate path step by step (Option 5)
-                if self.animating_path and (
-                        x, y) in self.solution[:self.anim_index]:
-                    self.draw_rect(
-                        px + 6,
-                        py + 6,
-                        CELL - 12,
-                        CELL - 12,
-                        0xFF00FF)  # Magenta for animation trail
+                #if self.animating_path and (
+                #        x, y) in self.solution[:self.anim_index]:
+                #    self.draw_rect(
+                #        px + 6,
+                #        py + 6,
+                #        CELL - 12,
+                #        CELL - 12,
+                #        0xFF00FF)  # Magenta for animation trail
+
+                if self.animating_path and (x, y) in self.solution[:self.anim_index]:
+                    self.draw_path_marker(x, y, 0xFF00FF)  # Magenta for animation trail
 
                 # Entry point
                 if (x, y) == self.config.entry:
@@ -274,6 +305,7 @@ class MazeVisualizer:
             self.show_path_flag = False
             self.animating_path = True
             self.anim_index = 0
+            self.path_style = (self.path_style + 1) % 4  # Toggle between styles
             self.render_maze()
 
         return 0
